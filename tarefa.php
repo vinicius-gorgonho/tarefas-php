@@ -3,6 +3,7 @@
 
 class Tarefa
 {
+    private $id;
     private $titulo;
     private $descricao;
 
@@ -24,5 +25,14 @@ class Tarefa
     public function setDescricao($descricao)
     {
         $this->descricao = $descricao;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 }

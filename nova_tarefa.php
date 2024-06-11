@@ -22,10 +22,20 @@
     }
     ?>
     <div class="container">
-        <form action="controller.php" method="POST">
-            <input type="text" name="titulo" />
-            <input type="text" name="descricao" />
-            <input type="submit" value="Cadastrar Tarefa">
+        <form action="controller.php?controller=TarefaController&method=salvar" method="POST">
+            <input type="hidden" name="method" value="salvar" class="form-control" />
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="titulo">Título</label>
+                <input type="text" name="titulo" class="form-control" />
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="descricao">Descrição</label>
+                <input type="text" name="descricao" class="form-control" />
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+
+                <input type="submit" value="Cadastrar Tarefa" class="btn btn-primary form-control">
+            </div>
         </form>
     </div>
 </body>

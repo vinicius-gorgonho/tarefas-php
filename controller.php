@@ -2,31 +2,106 @@
 require("tarefa.php");
 require("tarefa_dao.php");
 session_start();
-$_SESSION['msg'] = "";
 
-if ($_GET['index'] == 1) {
-    header('location: index.php');
-} else if ($_GET['listar_tarefa'] == 1) {
-    header('location: listar_tarefas.php');
-} else if ($_GET['nova_tarefa'] == 1) {
-    header('location: nova_tarefa.php');
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['method'])) {
+
+    $method = $_GET['method'];
+    if (method_exists('TarefaController', $method)) {
+        $tarefaController = new TarefaController();
+        $tarefaController->$method($_GET);
+    } else {
+        echo 'Metodo incorreto';
+    }
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['method'])) {
+    $method = $_POST['method'];
+    if (method_exists('TarefaController', $method)) {
+        var_dump($method);
+        $tarefaController = new TarefaController();
+        $tarefaController->$method($_POST);
+    } else {
+        echo 'Metodo incorreto';
+    }
 }
 
 
-if ($_POST['titulo']) {
-    
+class  TarefaController
+{
+    public function index()
+    {
+        $_SESSION['msg'] = "";
+        header('location: index.php');
+    }
 
-    $titulo = filter_input(INPUT_POST, 'titulo');
-    $descricao = filter_input(INPUT_POST, 'descricao');
+    public function listar_tarefa()
+    {
+        $_SESSION['msg'] = "";
+        header('location: listar_tarefas.php');
+    }
+    public function nova_tarefa()
+    {
+        $_SESSION['msg'] = "";
+        header('location: nova_tarefa.php');
+    }
 
-    $tarefa  = new Tarefa();
+    public function salvar()
+    {
+        $titulo = filter_input(INPUT_POST, 'titulo');
+        $descricao = filter_input(INPUT_POST, 'descricao');
 
-    // Create new person
-    $tarefa->setTitulo($titulo);
-    $tarefa->setDescricao($descricao);
+        $tarefa  = new Tarefa();
+        $tarefa->setTitulo($titulo);
+        $tarefa->setDescricao($descricao);
 
-    $tarefaDAO = new TarefaDAO();
-    $msg = $tarefaDAO->salvar($tarefa);
-    $_SESSION['msg'] = $msg;
-    header("location: nova_tarefa.php");
+        $tarefaDAO = new TarefaDAO();
+        $msg = $tarefaDAO->salvar($tarefa);
+        $_SESSION['msg'] = $msg;
+        header("location: nova_tarefa.php");
+    }
+    public function getTodos()
+    {
+        $tarefaDAO = new TarefaDAO();
+        return $tarefaDAO->getTodos();
+    }
+
+    public function iniciar_editar()
+    {
+        $_SESSION['editar_id'] = $_GET['id'];
+        header('location: editar_tarefa.php');
+    }
+    public function getPorId($id)
+    {
+        $tarefaDAO = new TarefaDAO();
+        return $tarefaDAO->getPorId($id);
+    }
+    public function editar()
+    {
+        $id = $_POST['id'];
+        $titulo = $_POST['titulo'];
+        $descricao = $_POST['descricao'];
+
+        $tarefa  = new Tarefa();
+        $tarefa->setId($id);
+        $tarefa->setTitulo($titulo);
+        $tarefa->setDescricao($descricao);
+
+        $tarefaDAO = new TarefaDAO();
+        $msg = $tarefaDAO->editar($tarefa);
+        $_SESSION['msg'] = $msg;
+        header('location: listar_tarefas.php');
+    }
+
+    public function excluir()
+    {
+        // $id = $_POST['id'];
+        $id = filter_input(INPUT_GET, 'id');
+        $tarefa  = new Tarefa();
+        $tarefa->setId($id);
+
+        $tarefaDAO = new TarefaDAO();
+        $msg = $tarefaDAO->excluir($id);
+        $_SESSION['msg'] = $msg;
+        header('location: listar_tarefas.php');
+    }
 }
